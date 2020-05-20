@@ -23,7 +23,7 @@ directoary with -d option.
 ```sh
 mkdir out
 rmsilence -d out *.flv
-```
+``
 
 # INSTALLATION
 

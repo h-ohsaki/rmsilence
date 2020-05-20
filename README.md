@@ -5,17 +5,17 @@ rmsilence - remove silent parts from specified video files
 # DESCRIPTION
 
 **rmsilence** is a Perl script for automatically removing silent parts (video
-segemnts with silent audio tracks) from video files.  For every video file
-specifed as command-line arguments, **rmsilence** uses the **silentdetect**
+segments with silent audio tracks) from video files.  For every video file
+specified as command-line arguments, **rmsilence** uses the **silentdetect**
 audio filter in FFmpeg for detecting silent parts in a video file.  Non-silent
 parts are extracted from the original video files, and those files are
 concatenated as a single video file.  All video files without silent parts are
-stored in the output directoary (/tmp by default).  You can specify the output
-directoary with -d option.
+stored in the output directory (/tmp by default).  You can specify the output
+directory with -d option.
 
 # REQUIREMENTS
 
-- Perl verison 5.0 or later
+- Perl version 5.0 or later
 - FFmpeg (https://ffmpeg.org/)
 
 # EXAMPLE

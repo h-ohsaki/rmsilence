@@ -21,6 +21,8 @@ directoary with -d option.
 # EXAMPLE
 
 ```sh
+rmsilence video.flv
+mpv /tmp/video.flv
 mkdir out
 rmsilence -d out *.flv
 ```

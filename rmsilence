@@ -4,8 +4,6 @@
 # Copyright (c) 2020, Hiroyuki Ohsaki.
 # All rights reserved.
 #
-# $Id: rmsilence,v 1.2 2020/05/19 14:46:10 ohsaki Exp ohsaki $
-#
 use File::Basename;
 use File::Temp qw/tempdir/;
 use Getopt::Std;

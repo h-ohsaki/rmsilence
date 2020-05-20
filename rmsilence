@@ -1,0 +1,84 @@
+#!/usr/bin/env perl
+#
+# Remove silent parts from specified video files.
+# Copyright (c) 2020, Hiroyuki Ohsaki.
+# All rights reserved.
+#
+# $Id: rmsilence,v 1.2 2020/05/19 14:46:10 ohsaki Exp ohsaki $
+#
+use File::Basename;
+use File::Temp qw/tempdir/;
+use Getopt::Std;
+use List::MoreUtils qw(any apply);
+use List::Util qw(sum min max);
+use Smart::Comments;
+use diagnostics;
+use strict;
+use warnings;
+
+sub usage {
+    my $prog = basename($0);
+    die <<EOF;
+usage: $prog [-d dir] file...
+EOF
+}
+
+sub remove_silence {
+    my ( $file, $outdir ) = @_;
+
+    my $tmpdir = tempdir( CLEANUP => 0 );
+    # extract input file extension
+    my $ext = $file;
+    $ext =~ s/^.*\.//;
+    # detect silint parts using ffmpeg
+    open(
+        my $fh,
+        "ffmpeg -y -i $file -af silencedetect=n=-65dB:d=3 -f wav /dev/null 2>&1 |"
+    ) or die "open: ffmpeg\n";
+    my $offset = 0;
+    my $count  = 1;
+    my @list;
+    while (<$fh>) {
+        chomp;
+        if (/silence_start: *([\d.]+)/) {
+            # extract non-silent segment from the original video
+            my $start    = $1;
+            my $duration = $start - $offset;
+	    next if $duration <= 0;
+            my $outfile  = sprintf "$tmpdir/%02d.$ext", $count;
+	    warn "extracting [$offset:$start]...\n";
+            system(
+                "ffmpeg -y -loglevel 24 -i $file -ss $offset -t $duration -acodec copy -vcodec copy $outfile"
+            );
+            push @list, "file $outfile";
+            $count++;
+        }
+        if (/silence_end: *([\d.]+)/) {
+            # this is the start of the next non-silent segment
+            $offset = $1;
+        }
+    }
+    close($fh);
+
+    # extract the last non-silent segment
+    my $outfile = sprintf "$tmpdir/%02d.$ext", $count;
+    warn "extracting [$offset:]...\n";
+    system(
+        "ffmpeg -y -loglevel 24 -i $file -ss $offset -acodec copy -vcodec copy $outfile");
+    push @list, "file $outfile";
+
+    # compile the list of non-silent segments
+    open( $fh, ">$tmpdir/list" ) or die "$tmpdir/list: $!\n";
+    print {$fh} join( "\n", @list ), "\n";
+    close($fh);
+
+    # join all non-silent segments
+    system("ffmpeg -y -loglevel 24 -f concat -safe 0 -i $tmpdir/list -c copy $outdir/$file");
+}
+
+our $opt_d;
+getopts('d:') or usage();
+my $outdir = $opt_d || '/tmp';
+for my $file (@ARGV) {
+    remove_silence( $file, $outdir );
+}

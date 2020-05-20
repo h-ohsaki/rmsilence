@@ -23,17 +23,17 @@ directoary with -d option.
 ```sh
 mkdir out
 rmsilence -d out *.flv
-``
+```
 
 # INSTALLATION
 
 Simlpy copy the script **rmsilence** to any directoary in your search path.
 An example session on UNIX systems:
 
-``
+```sh
 wget https://raw.githubusercontent.com/h-ohsaki/rmsilence/master/rmsilence
 sudo install rmsilence /usr/local/bin
-``
+```
 
 # AVAILABILITY
 

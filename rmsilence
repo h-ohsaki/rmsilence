@@ -9,12 +9,7 @@
 use File::Basename;
 use File::Temp qw/tempdir/;
 use Getopt::Std;
-use List::MoreUtils qw(any apply);
-use List::Util qw(sum min max);
-use Smart::Comments;
-use diagnostics;
 use strict;
-use warnings;
 
 sub usage {
     my $prog = basename($0);
